@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="My Cards">
+<title>My Cards</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f2f2f7;
+    --surface: #ffffff;
+    --surface2: #f2f2f7;
+    --text: #1c1c1e;
+    --text2: #6c6c70;
+    --text3: #aeaeb2;
+    --border: rgba(0,0,0,0.09);
+    --border2: rgba(0,0,0,0.15);
+    --blue: #007aff;
+    --blue-bg: #e8f1ff;
+    --blue-text: #0051a8;
+    --green: #34c759;
+    --green-bg: #e6f7ea;
+    --green-text: #1a7a34;
+    --purple: #5856d6;
+    --purple-bg: #eeeefe;
+    --purple-text: #3634a3;
+    --amber: #ff9500;
+    --amber-bg: #fff4e0;
+    --amber-text: #a85e00;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1e;
+      --surface: #2c2c2e;
+      --surface2: #3a3a3c;
+      --text: #ffffff;
+      --text2: #aeaeb2;
+      --text3: #636366;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --blue-bg: #0a2a52;
+      --blue-text: #5aacff;
+      --green-bg: #0d3320;
+      --green-text: #52d57a;
+      --purple-bg: #1e1d4a;
+      --purple-text: #908eff;
+      --amber-bg: #3d2600;
+      --amber-text: #ffb340;
+    }
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border2);
+    padding: calc(var(--safe-top) + 14px) 16px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-shrink: 0;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .app-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--text);
+  }
+
+  .card-count {
+    font-size: 13px;
+    color: var(--text2);
+    background: var(--surface2);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* ── Search ── */
+  .search-wrap {
+    position: relative;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  #searchInput {
+    width: 100%;
+    padding: 9px 36px 9px 32px;
+    font-size: 16px;
+    background: var(--surface2);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  #searchInput::placeholder { color: var(--text3); }
+
+  .clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: var(--text3);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .clear-btn.visible { display: flex; }
+
+  .clear-btn svg { width: 10px; height: 10px; stroke: var(--surface); }
+
+  /* ── Smart Answer Panel ── */
+  .answer-panel {
+    margin: 12px 16px 0;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border2);
+    overflow: hidden;
+    display: none;
+    animation: slideDown 0.18s ease;
+  }
+
+  .answer-panel.visible { display: block; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .answer-header {
+    padding: 10px 14px;
+    background: var(--blue-bg);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .answer-header-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blue-text);
+  }
+
+  .answer-body { padding: 12px 14px; }
+
+  .best-card-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .best-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: var(--blue);
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .best-card-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .answer-reason {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  .answer-reason strong { color: var(--text); font-weight: 600; }
+
+  .runner-up-row {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 0.5px solid var(--border);
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  .runner-up-row strong { color: var(--text); font-weight: 600; }
+
+  /* ── Scroll area ── */
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(var(--safe-bottom) + 24px);
+  }
+
+  /* ── Section ── */
+  .section { padding: 20px 16px 0; }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  .cards-stack { display: flex; flex-direction: column; gap: 10px; }
+
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    transition: opacity 0.15s;
+  }
+
+  .card.hidden { display: none; }
+
+  .card.dimmed { opacity: 0.35; }
+
+  .card-header {
+    padding: 13px 14px 11px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .card-header:active { background: var(--surface2); }
+
+  .card-emoji {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .card-info { flex: 1; min-width: 0; }
+
+  .card-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-sub {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .card-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .chevron {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    opacity: 0.3;
+    transition: transform 0.2s;
+  }
+
+  .card.expanded .chevron { transform: rotate(180deg); }
+
+  .benefits {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease, padding 0.2s;
+  }
+
+  .card.expanded .benefits {
+    max-height: 800px;
+    padding: 10px 0 4px;
+  }
+
+  .benefit {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 14px;
+  }
+
+  .benefit-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    opacity: 0.75;
+  }
+
+  .benefit-text {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.45;
+  }
+
+  .benefit-text strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  mark {
+    background: #ffe066;
+    color: #5a4000;
+    border-radius: 3px;
+    padding: 0 2px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    mark { background: #5a4000; color: #ffd966; }
+  }
+
+  /* ── No results ── */
+  .no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text2);
+    font-size: 15px;
+    display: none;
+  }
+
+  .no-results .emoji { font-size: 36px; display: block; margin-bottom: 12px; }
+
+  /* ── Section hidden ── */
+  .section.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <span class="app-title">My Cards</span>
+    <span class="card-count" id="cardCount">5 cards</span>
+  </div>
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="searchInput" type="search" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Search benefits, e.g. gas, Lyft, miles…" />
+    <button class="clear-btn" id="clearBtn" aria-label="Clear search">
+      <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 2l6 6M8 2l-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="scroll-area">
+
+  <div id="answerPanel" class="answer-panel">
+    <div class="answer-header">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="stroke:var(--blue-text);flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <span class="answer-header-text" id="answerTitle">Best card for this</span>
+    </div>
+    <div class="answer-body" id="answerBody"></div>
+  </div>
+
+  <!-- OfficeT Business -->
+  <div class="section" id="sec-officet">
+    <div class="section-label">OfficeT Business</div>
+    <div class="cards-stack">
+
+      <div class="card" id="card-venturex" data-keywords="miles travel airport lounge tsa precheck global entry hotel rental car travel credit venture capital one rewards points transfer airlines">
+        <div class="card-header" onclick="toggleCard('card-venturex')">
+          <div class="card-emoji" style="background:#e8f1ff;">💼</div>
+          <div class="card-info">
+            <div class="card-name">Capital One Venture X</div>
+            <div class="card-sub">Capital One · Business</div>
+          </div>
+          <div class="card-tag" style="background:var(--blue-bg);color:var(--blue-text);">Travel</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="benefits">
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.29 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.17 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.14a16 16 0 0 0 6 6l.61-.61a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div class="benefit-text"><strong>2× miles on everything</strong> — unlimited on all purchases</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.29 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.17 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.14a16 16 0 0 0 6 6l.61-.61a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div class="benefit-text"><strong>10× miles on hotels &amp; rental cars</strong> booked via Capital One Travel</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            <div class="benefit-text"><strong>Airport lounge access</strong> — Capital One, Priority Pass &amp; Plaza Premium</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div class="benefit-text"><strong>$120 TSA PreCheck / Global Entry credit</strong> every 4 years</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <div class="benefit-text"><strong>$300 annual travel credit</strong> — bookings via Capital One Travel</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+            <div class="benefit-text"><strong>10,000 bonus miles</strong> each account anniversary (~$100 value)</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <div class="benefit-text"><strong>Primary rental car insurance</strong> — auto collision damage waiver</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="card-costco" data-keywords="costco 4% gas ev charging 3% dining restaurant travel 2% costco warehouse 1% cash back citi no annual fee fuel">
+        <div class="card-header" onclick="toggleCard('card-costco')">
+          <div class="card-emoji" style="background:var(--green-bg);">🏪</div>
+          <div class="card-info">
+            <div class="card-name">Costco Citi Business Visa</div>
+            <div class="card-sub">Citi · Business</div>
+          </div>
+          <div class="card-tag" style="background:var(--green-bg);color:var(--green-text);">Cash back</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="benefits">
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V8l9-6 9 6v14H3z"/><path d="M9 22V12h6v10"/></svg>
+            <div class="benefit-text"><strong>4% on gas &amp; EV charging</strong> — worldwide, first $7,000/yr then 1%</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            <div class="benefit-text"><strong>3% on dining &amp; travel</strong> — restaurants, hotels, airfare</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <div class="benefit-text"><strong>2% at Costco</strong> — in-warehouse and Costco.com</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <div class="benefit-text"><strong>1% on everything else</strong> — no category cap</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <div class="benefit-text"><strong>No annual fee</strong> with paid Costco membership</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div class="benefit-text"><strong>Damage &amp; theft protection</strong> on eligible purchases</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- OfficeLB Business -->
+  <div class="section" id="sec-officelb">
+    <div class="section-label">OfficeLB Business</div>
+    <div class="cards-stack">
+
+      <div class="card" id="card-ink" data-keywords="chase ink unlimited 1.5% cash back everything no annual fee no foreign transaction employee cards purchase protection extended warranty business">
+        <div class="card-header" onclick="toggleCard('card-ink')">
+          <div class="card-emoji" style="background:var(--amber-bg);">🏥</div>
+          <div class="card-info">
+            <div class="card-name">Chase Ink Business Unlimited</div>
+            <div class="card-sub">Chase · Business</div>
+          </div>
+          <div class="card-tag" style="background:var(--amber-bg);color:var(--amber-text);">Cash back</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="benefits">
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <div class="benefit-text"><strong>1.5% cash back on everything</strong> — unlimited, no category tracking needed</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <div class="benefit-text"><strong>No annual fee</strong></div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <div class="benefit-text"><strong>No foreign transaction fees</strong></div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div class="benefit-text"><strong>Extended warranty &amp; purchase protection</strong> on eligible items</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            <div class="benefit-text"><strong>Pool points with Chase Sapphire</strong> — combine if you hold both cards</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <div class="benefit-text"><strong>Free employee cards</strong> with individual spending limits</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Personal -->
+  <div class="section" id="sec-personal">
+    <div class="section-label">Personal</div>
+    <div class="cards-stack">
+
+      <div class="card" id="card-bilt" data-keywords="bilt rent rewards 3x dining 2x travel 1x lyft gold status transfer partners united american airlines hyatt marriott no annual fee rent day double points mastercard">
+        <div class="card-header" onclick="toggleCard('card-bilt')">
+          <div class="card-emoji" style="background:var(--purple-bg);">🏠</div>
+          <div class="card-info">
+            <div class="card-name">Bilt Mastercard</div>
+            <div class="card-sub">Wells Fargo · Personal</div>
+          </div>
+          <div class="card-tag" style="background:var(--purple-bg);color:var(--purple-text);">Rent + Travel</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="benefits">
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <div class="benefit-text"><strong>1× point on rent</strong> — no processing fee (up to 100,000 pts/yr)</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            <div class="benefit-text"><strong>3× on dining</strong>, <strong>2× on travel</strong>, <strong>1× on everything else</strong></div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <div class="benefit-text"><strong>Lyft Gold status</strong> + <strong>2× points on Lyft</strong> rides</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            <div class="benefit-text"><strong>Transfer 1:1 to 14+ partners</strong> — United, AA, Hyatt, Marriott, and more</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <div class="benefit-text"><strong>Rent Day (1st of month)</strong> — double points on non-rent purchases</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <div class="benefit-text"><strong>No annual fee</strong> · no foreign transaction fees</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="card-sapphire" data-keywords="sapphire preferred 3x dining 2x travel lyft pink doordash dashpass instacart transfer united hyatt southwest marriott british airways trip delay cancel baggage insurance chase travel hotel credit">
+        <div class="card-header" onclick="toggleCard('card-sapphire')">
+          <div class="card-emoji" style="background:var(--blue-bg);">✈️</div>
+          <div class="card-info">
+            <div class="card-name">Chase Sapphire Preferred</div>
+            <div class="card-sub">Chase · Personal</div>
+          </div>
+          <div class="card-tag" style="background:var(--blue-bg);color:var(--blue-text);">Travel</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="benefits">
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            <div class="benefit-text"><strong>3× on dining</strong> — restaurants, takeout, delivery services</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.29 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.17 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.14a16 16 0 0 0 6 6l.61-.61a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div class="benefit-text"><strong>2× on travel</strong> — flights, hotels, transit, parking, tolls</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div class="benefit-text"><strong>DashPass</strong> (DoorDash) + <strong>Instacart+</strong> membership included</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <div class="benefit-text"><strong>Lyft Pink All Access</strong> included + <strong>5× on Lyft</strong> rides</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            <div class="benefit-text"><strong>Transfer 1:1 to 14 partners</strong> — United, Hyatt, Southwest, Marriott, BA &amp; more</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div class="benefit-text"><strong>Trip delay, cancellation &amp; baggage insurance</strong> — strong travel protections</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <div class="benefit-text"><strong>$50/yr hotel credit</strong> via Chase Travel + $95 annual fee</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="noResults" class="no-results">
+    <span class="emoji">🔍</span>
+    No matching benefits found.<br>Try a different keyword.
+  </div>
+
+</div>
+
+<script>
+const CARDS = [
+  {
+    id: 'card-venturex',
+    name: 'Capital One Venture X',
+    section: 'sec-officet',
+    keywords: 'miles travel airport lounge tsa precheck global entry hotel rental car travel credit venture capital one rewards points transfer airlines uber lyft rideshare',
+    rates: { 'hotels': '10×', 'rental car': '10×', 'travel': '2×', 'everything': '2×' },
+    best: { categories: ['travel', 'hotel', 'hotels', 'lounge', 'airport', 'miles', 'rental', 'rent a car', 'global entry', 'tsa', 'precheck'], rate: '2–10× miles', note: 'Best for travel purchases. 10× on hotels & rental cars via Capital One Travel; 2× on everything else. Also has a $300 travel credit and lounge access.' }
+  },
+  {
+    id: 'card-costco',
+    name: 'Costco Citi Business Visa',
+    section: 'sec-officet',
+    keywords: 'costco 4% gas ev charging 3% dining restaurant travel 2% costco warehouse 1% cash back citi no annual fee fuel petrol groceries food',
+    rates: { 'gas': '4%', 'ev': '4%', 'charging': '4%', 'dining': '3%', 'restaurant': '3%', 'travel': '3%', 'costco': '2%' },
+    best: { categories: ['gas', 'fuel', 'ev', 'charging', 'petrol', 'costco'], rate: '4% on gas', note: 'Best for gas and EV charging (4%, first $7k/yr). Also 3% on dining and travel, 2% at Costco.' }
+  },
+  {
+    id: 'card-ink',
+    name: 'Chase Ink Business Unlimited',
+    section: 'sec-officelb',
+    keywords: 'chase ink unlimited 1.5% cash back everything no annual fee no foreign transaction employee cards purchase protection extended warranty business office supplies',
+    rates: { 'everything': '1.5%' },
+    best: { categories: ['office', 'supplies', 'miscellaneous', 'everything', 'general'], rate: '1.5% everywhere', note: 'Simple flat 1.5% on everything — great catch-all for OfficeLB purchases with no annual fee.' }
+  },
+  {
+    id: 'card-bilt',
+    name: 'Bilt Mastercard',
+    section: 'sec-personal',
+    keywords: 'bilt rent rewards 3x dining 2x travel 1x lyft gold status transfer partners united american airlines hyatt marriott no annual fee rent day double points mastercard uber rideshare food delivery',
+    rates: { 'rent': '1×', 'dining': '3×', 'travel': '2×', 'lyft': '2×' },
+    best: { categories: ['rent', 'rental payment', 'lyft'], rate: '1–3× points', note: 'Only card that earns points on rent. 3× dining, 2× travel & Lyft. On the 1st of the month, earns double on non-rent purchases.' }
+  },
+  {
+    id: 'card-sapphire',
+    name: 'Chase Sapphire Preferred',
+    section: 'sec-personal',
+    keywords: 'sapphire preferred 3x dining 2x travel lyft pink doordash dashpass instacart transfer united hyatt southwest marriott british airways trip delay cancel baggage insurance chase travel hotel delivery food',
+    rates: { 'dining': '3×', 'travel': '2×', 'lyft': '5×', 'doordash': '3×', 'instacart': '3×' },
+    best: { categories: ['doordash', 'door dash', 'dashpass', 'instacart', 'lyft', 'food delivery', 'delivery', 'trip insurance', 'travel insurance', 'cancel', 'delay', 'baggage'], rate: '3–5× points', note: 'Best for Lyft (5×), DoorDash & Instacart (included membership). Also strong travel protections — trip delay, cancellation, and baggage insurance.' }
+  }
+];
+
+function toggleCard(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('expanded');
+}
+
+const searchInput = document.getElementById('searchInput');
+const clearBtn = document.getElementById('clearBtn');
+const answerPanel = document.getElementById('answerPanel');
+const answerTitle = document.getElementById('answerTitle');
+const answerBody = document.getElementById('answerBody');
+const noResults = document.getElementById('noResults');
+
+searchInput.addEventListener('input', handleSearch);
+clearBtn.addEventListener('click', () => {
+  searchInput.value = '';
+  handleSearch();
+  searchInput.focus();
+});
+
+function handleSearch() {
+  const q = searchInput.value.trim().toLowerCase();
+  clearBtn.classList.toggle('visible', q.length > 0);
+
+  if (!q) {
+    resetAll();
+    return;
+  }
+
+  removeHighlights();
+
+  let anyMatch = false;
+  let bestCard = null;
+  let bestScore = 0;
+
+  CARDS.forEach(cardData => {
+    const el = document.getElementById(cardData.id);
+    const kw = cardData.keywords;
+    const fullText = (el.innerText + ' ' + kw).toLowerCase();
+    const matches = fullText.includes(q);
+    if (matches) {
+      el.classList.remove('hidden', 'dimmed');
+      highlightInCard(el, q);
+      anyMatch = true;
+
+      const isBestCategory = cardData.best.categories.some(c => c.includes(q) || q.includes(c));
+      const score = isBestCategory ? 2 : 1;
+      if (score > bestScore) { bestScore = score; bestCard = cardData; }
+    } else {
+      el.classList.add('dimmed');
+      el.classList.remove('hidden');
+    }
+  });
+
+  CARDS.forEach(cardData => {
+    const sec = document.getElementById(cardData.section);
+    if (sec) {
+      const anyVisible = [...sec.querySelectorAll('.card')].some(c => !c.classList.contains('hidden'));
+      sec.classList.toggle('hidden', !anyVisible);
+    }
+  });
+
+  noResults.style.display = anyMatch ? 'none' : 'block';
+
+  if (bestCard) {
+    showAnswer(q, bestCard);
+  } else {
+    answerPanel.classList.remove('visible');
+  }
+}
+
+function showAnswer(q, cardData) {
+  answerTitle.textContent = `Best card for "${q}"`;
+  answerBody.innerHTML = `
+    <div class="best-card-row">
+      <span class="best-badge">Use this</span>
+      <span class="best-card-name">${cardData.name}</span>
+    </div>
+    <div class="answer-reason">${cardData.best.note}</div>
+  `;
+  answerPanel.classList.add('visible');
+}
+
+function resetAll() {
+  CARDS.forEach(c => {
+    const el = document.getElementById(c.id);
+    el.classList.remove('hidden', 'dimmed');
+  });
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('hidden'));
+  answerPanel.classList.remove('visible');
+  noResults.style.display = 'none';
+  removeHighlights();
+}
+
+function highlightInCard(el, q) {
+  const benefits = el.querySelectorAll('.benefit-text');
+  benefits.forEach(b => {
+    const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    b.innerHTML = b.innerHTML.replace(/<mark[^>]*>(.*?)<\/mark>/gi, '$1');
+    if (re.test(b.innerHTML)) {
+      b.innerHTML = b.innerHTML.replace(re, '<mark>$1</mark>');
+      el.classList.add('expanded');
+    }
+  });
+}
+
+function removeHighlights() {
+  document.querySelectorAll('mark').forEach(m => m.replaceWith(document.createTextNode(m.textContent)));
+}
+</script>
+</body>
+</html>
