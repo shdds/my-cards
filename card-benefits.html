@@ -156,6 +156,45 @@
 
   .clear-btn svg { width: 10px; height: 10px; stroke: var(--surface); }
 
+
+  /* ── Chips ── */
+  .chips-wrap {
+    display: flex;
+    overflow-x: auto;
+    gap: 7px;
+    padding: 10px 16px 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .chips-wrap::-webkit-scrollbar { display: none; }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+    background: var(--surface2);
+    color: var(--text2);
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+
+  .chip:active { opacity: 0.7; }
+
+  .chip.active {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .chip-emoji { font-size: 14px; line-height: 1; }
+
   /* ── Smart Answer Panel ── */
   .answer-panel {
     margin: 12px 16px 0;
@@ -407,6 +446,23 @@
     </button>
   </div>
 </div>
+  <div class="chips-wrap" id="chipsWrap">
+    <button class="chip" data-query="shopping" onclick="tapChip(this)"><span class="chip-emoji">🛍️</span>Shopping</button>
+    <button class="chip" data-query="dining" onclick="tapChip(this)"><span class="chip-emoji">🍽️</span>Dining</button>
+    <button class="chip" data-query="amazon" onclick="tapChip(this)"><span class="chip-emoji">📦</span>Amazon</button>
+    <button class="chip" data-query="ebay" onclick="tapChip(this)"><span class="chip-emoji">🏷️</span>eBay</button>
+    <button class="chip" data-query="entertainment" onclick="tapChip(this)"><span class="chip-emoji">🎬</span>Entertainment</button>
+    <button class="chip" data-query="uber lyft" onclick="tapChip(this)"><span class="chip-emoji">🚗</span>Uber/Lyft</button>
+    <button class="chip" data-query="hotel" onclick="tapChip(this)"><span class="chip-emoji">🏨</span>Hotel</button>
+    <button class="chip" data-query="flight" onclick="tapChip(this)"><span class="chip-emoji">✈️</span>Flight</button>
+    <button class="chip" data-query="gas" onclick="tapChip(this)"><span class="chip-emoji">⛽</span>Gas</button>
+    <button class="chip" data-query="parking" onclick="tapChip(this)"><span class="chip-emoji">🅿️</span>Parking</button>
+    <button class="chip" data-query="rental car" onclick="tapChip(this)"><span class="chip-emoji">🔑</span>Car Rental</button>
+    <button class="chip" data-query="office" onclick="tapChip(this)"><span class="chip-emoji">🖨️</span>Office Bills</button>
+    <button class="chip" data-query="utilities" onclick="tapChip(this)"><span class="chip-emoji">💡</span>Utilities</button>
+    <button class="chip" data-query="rent" onclick="tapChip(this)"><span class="chip-emoji">🏠</span>Rent</button>
+    <button class="chip" data-query="foreign" onclick="tapChip(this)"><span class="chip-emoji">🌍</span>Overseas</button>
+  </div>
 
 <div class="scroll-area">
 
@@ -423,7 +479,7 @@
     <div class="section-label">OfficeT Business</div>
     <div class="cards-stack">
 
-      <div class="card" id="card-venturex" data-keywords="miles travel airport lounge tsa precheck global entry hotel rental car travel credit venture capital one rewards points transfer airlines">
+      <div class="card" id="card-venturex" data-keywords="miles travel airport lounge tsa precheck global entry hotel rental car travel credit venture capital one rewards points transfer airlines uber rideshare lyft parking entertainment flight foreign transaction overseas international travel abroad">
         <div class="card-header" onclick="toggleCard('card-venturex')">
           <div class="card-emoji" style="background:#e8f1ff;">💼</div>
           <div class="card-info">
@@ -462,10 +518,14 @@
             <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
             <div class="benefit-text"><strong>Primary rental car insurance</strong> — auto collision damage waiver</div>
           </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <div class="benefit-text"><strong>No foreign transaction fees</strong> — use freely overseas</div>
+          </div>
         </div>
       </div>
 
-      <div class="card" id="card-costco" data-keywords="costco 4% gas ev charging 3% dining restaurant travel 2% costco warehouse 1% cash back citi no annual fee fuel">
+      <div class="card" id="card-costco" data-keywords="costco 4% gas ev charging 3% dining restaurant travel 2% costco warehouse 1% cash back citi no annual fee fuel shopping amazon ebay utilities office entertainment foreign transaction overseas international travel abroad">
         <div class="card-header" onclick="toggleCard('card-costco')">
           <div class="card-emoji" style="background:var(--green-bg);">🏪</div>
           <div class="card-info">
@@ -500,6 +560,10 @@
             <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <div class="benefit-text"><strong>Damage &amp; theft protection</strong> on eligible purchases</div>
           </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <div class="benefit-text"><strong>No foreign transaction fees</strong> — use freely overseas</div>
+          </div>
         </div>
       </div>
 
@@ -511,7 +575,7 @@
     <div class="section-label">OfficeLB Business</div>
     <div class="cards-stack">
 
-      <div class="card" id="card-ink" data-keywords="chase ink unlimited 1.5% cash back everything no annual fee no foreign transaction employee cards purchase protection extended warranty business">
+      <div class="card" id="card-ink" data-keywords="chase ink unlimited 1.5% cash back everything no annual fee no foreign transaction employee cards purchase protection extended warranty business office utilities amazon shopping ebay foreign overseas international travel abroad">
         <div class="card-header" onclick="toggleCard('card-ink')">
           <div class="card-emoji" style="background:var(--amber-bg);">🏥</div>
           <div class="card-info">
@@ -591,6 +655,10 @@
           <div class="benefit">
             <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
             <div class="benefit-text"><strong>No annual fee</strong> · no foreign transaction fees</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <div class="benefit-text"><strong>No foreign transaction fees</strong> — use freely overseas</div>
           </div>
         </div>
       </div>
@@ -703,9 +771,13 @@ const answerTitle = document.getElementById('answerTitle');
 const answerBody = document.getElementById('answerBody');
 const noResults = document.getElementById('noResults');
 
-searchInput.addEventListener('input', handleSearch);
+searchInput.addEventListener('input', () => {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  handleSearch();
+});
 clearBtn.addEventListener('click', () => {
   searchInput.value = '';
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
   handleSearch();
   searchInput.focus();
 });
@@ -786,18 +858,55 @@ function resetAll() {
 
 function highlightInCard(el, q) {
   const benefits = el.querySelectorAll('.benefit-text');
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
   benefits.forEach(b => {
-    const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
-    b.innerHTML = b.innerHTML.replace(/<mark[^>]*>(.*?)<\/mark>/gi, '$1');
-    if (re.test(b.innerHTML)) {
-      b.innerHTML = b.innerHTML.replace(re, '<mark>$1</mark>');
-      el.classList.add('expanded');
-    }
+    const walker = document.createTreeWalker(b, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    let node;
+    while ((node = walker.nextNode())) textNodes.push(node);
+    let matched = false;
+    textNodes.forEach(tn => {
+      re.lastIndex = 0;
+      if (!re.test(tn.nodeValue)) return;
+      re.lastIndex = 0;
+      const parts = tn.nodeValue.split(re);
+      if (parts.length <= 1) return;
+      const frag = document.createDocumentFragment();
+      parts.forEach((part, i) => {
+        if (i % 2 === 1) {
+          const mark = document.createElement('mark');
+          mark.textContent = part;
+          frag.appendChild(mark);
+        } else {
+          frag.appendChild(document.createTextNode(part));
+        }
+      });
+      tn.parentNode.replaceChild(frag, tn);
+      matched = true;
+    });
+    if (matched) el.classList.add('expanded');
   });
 }
 
 function removeHighlights() {
   document.querySelectorAll('mark').forEach(m => m.replaceWith(document.createTextNode(m.textContent)));
+}
+
+function tapChip(btn) {
+  const allChips = document.querySelectorAll('.chip');
+  const isActive = btn.classList.contains('active');
+  allChips.forEach(c => c.classList.remove('active'));
+  if (isActive) {
+    searchInput.value = '';
+    handleSearch();
+  } else {
+    btn.classList.add('active');
+    const q = btn.dataset.query;
+    searchInput.value = q;
+    clearBtn.classList.add('visible');
+    handleSearch();
+  }
+  searchInput.blur();
 }
 </script>
 </body>
