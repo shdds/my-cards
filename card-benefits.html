@@ -160,13 +160,10 @@
   /* ── Chips ── */
   .chips-wrap {
     display: flex;
-    overflow-x: auto;
-    gap: 7px;
-    padding: 10px 16px 0;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 16px 2px;
   }
-  .chips-wrap::-webkit-scrollbar { display: none; }
 
   .chip {
     display: inline-flex;
@@ -183,7 +180,6 @@
     color: var(--text2);
     -webkit-tap-highlight-color: transparent;
     transition: background 0.15s, color 0.15s;
-    flex-shrink: 0;
   }
 
   .chip:active { opacity: 0.7; }
@@ -449,8 +445,8 @@
   <div class="chips-wrap" id="chipsWrap">
     <button class="chip" data-query="shopping" onclick="tapChip(this)"><span class="chip-emoji">🛍️</span>Shopping</button>
     <button class="chip" data-query="dining" onclick="tapChip(this)"><span class="chip-emoji">🍽️</span>Dining</button>
-    <button class="chip" data-query="amazon" onclick="tapChip(this)"><span class="chip-emoji">📦</span>Amazon</button>
-    <button class="chip" data-query="ebay" onclick="tapChip(this)"><span class="chip-emoji">🏷️</span>eBay</button>
+    <button class="chip" data-query="purchase protection" onclick="tapChip(this)"><span class="chip-emoji">📦</span>Amazon</button>
+    <button class="chip" data-query="extended warranty" onclick="tapChip(this)"><span class="chip-emoji">🏷️</span>eBay</button>
     <button class="chip" data-query="entertainment" onclick="tapChip(this)"><span class="chip-emoji">🎬</span>Entertainment</button>
     <button class="chip" data-query="uber lyft" onclick="tapChip(this)"><span class="chip-emoji">🚗</span>Uber/Lyft</button>
     <button class="chip" data-query="hotel" onclick="tapChip(this)"><span class="chip-emoji">🏨</span>Hotel</button>
@@ -600,7 +596,7 @@
           </div>
           <div class="benefit">
             <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <div class="benefit-text"><strong>Extended warranty &amp; purchase protection</strong> on eligible items</div>
+            <div class="benefit-text"><strong>Extended warranty &amp; purchase protection</strong> — great for Amazon, eBay &amp; online shopping</div>
           </div>
           <div class="benefit">
             <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
@@ -697,6 +693,10 @@
           <div class="benefit">
             <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <div class="benefit-text"><strong>Trip delay, cancellation &amp; baggage insurance</strong> — strong travel protections</div>
+          </div>
+          <div class="benefit">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <div class="benefit-text"><strong>Extended warranty &amp; purchase protection</strong> — great for Amazon, eBay &amp; online shopping</div>
           </div>
           <div class="benefit">
             <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
